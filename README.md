@@ -8,9 +8,10 @@ One of our main principals has been to keep the starter kit as lightweight as po
 
 | Feature                  | Info               | Progress |
 |--------------------------|--------------------|----------|
-| Authentication           | JWT                | Pending  |
+| Configuration            | Environment        | Done     |
+| Authentication           | JWT                | Done     |
 | Authorization            | RBAC (Role based)  | Pending  |
-| ORM Integration          | TypeORM            | Pending  |
+| ORM Integration          | TypeORM            | Done     |
 | DB Migrations            | TypeORM            | Pending  |
 | Logging                  | winston            | Pending  |
 | Request Validation       | class-validator    | Pending  |
