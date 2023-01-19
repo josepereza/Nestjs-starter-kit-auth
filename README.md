@@ -1,4 +1,4 @@
-## Nest Js Starter Rest API Kit
+## Basic NestJs Starter Rest API Kit
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
