@@ -41,14 +41,14 @@ export class AuthService {
                 },
                 process.env.ACCESS_SECRET,
                 {
-                    expiresIn: '1h',
+                    expiresIn: process.env.JWT_EXPIRATION_TIME,
                 },
             ),
         };
     }
 
 
-    async refresh(refreshStr: string): Promise<string | undefined> {
+    async refresh(refreshStr: string) {
         // need to create this helper function.
         // const refreshToken = await this.retrieveRefreshToken(refreshStr);
 
@@ -71,7 +71,9 @@ export class AuthService {
         };
 
         // sign is imported from jsonwebtoken like import { sign, verify } from 'jsonwebtoken';
-        return sign(accessToken, process.env.ACCESS_SECRET, { expiresIn: '1h' });
+        return {
+            accessToken: sign(accessToken, process.env.ACCESS_SECRET, { expiresIn: process.env.JWT_EXPIRATION_TIME })
+        };
     }
 
 }
