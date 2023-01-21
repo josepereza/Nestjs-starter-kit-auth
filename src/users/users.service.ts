@@ -11,8 +11,8 @@ export class UsersService {
 
   constructor(
     @InjectRepository(User) private userRepository: Repository<User>,
-  ) {   }
-  
+  ) { }
+
   async create(userDetails: CreateUserParams) {
     if (
       (await this.userRepository.findOneBy({ username: userDetails.username }))
@@ -27,10 +27,10 @@ export class UsersService {
         message: 'New user created.',
         data: result
       };
-    } catch (err: any){
+    } catch (err: any) {
       return new HttpException(err, HttpStatus.BAD_REQUEST);
     }
-    
+
   }
 
   findAll() {
@@ -42,8 +42,11 @@ export class UsersService {
       where: {
         id: id,
       },
-      relations: ['profile'],
     });
+  }
+
+  findByEmail(email: string) {
+    return this.userRepository.findOneBy({ email });
   }
 
   findOneByUser(username: string) {
