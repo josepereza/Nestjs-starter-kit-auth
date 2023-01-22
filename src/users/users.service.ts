@@ -22,6 +22,12 @@ export class UsersService {
       return new ConflictException('User already exist.');
     }
 
+    if (
+      (await this.userRepository.findOneBy({ email: userDetails.email }))
+    ) {
+      return new ConflictException('Email already exist.');
+    }
+
     const salt = await bcrypt.genSalt();
 
     const newUser = this.userRepository.create({ ...userDetails });
