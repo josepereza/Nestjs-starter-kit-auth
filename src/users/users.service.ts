@@ -5,6 +5,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateUserParams, UpdateUserParams } from 'src/utils/types';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UsersService {
@@ -20,8 +22,13 @@ export class UsersService {
       return new ConflictException('User already exist.');
     }
 
+    const salt = await bcrypt.genSalt();
+
     const newUser = this.userRepository.create({ ...userDetails });
+    newUser.password = await bcrypt.hash(userDetails.password, salt);
+
     try {
+
       const { id, password, ...result } = await this.userRepository.save(newUser);
       return {
         message: 'New user created.',

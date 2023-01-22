@@ -3,6 +3,7 @@ import { sign, verify } from 'jsonwebtoken';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
 import { RefreshToken } from './entities/refresh-token.entity';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -16,10 +17,13 @@ export class AuthService {
         // need to import userService
         const user = await this._users.findByEmail(email);
         if (!user) throw new ForbiddenException('Access Denied');
-        // verify your user -- use argon2 for password hashing!!
-        if (user.password !== password) throw new ForbiddenException('Access Denied');
-        // need to create this method
-        return this.newRefreshAndAccessToken(user, values);
+
+        if (bcrypt.compare(user.password, password)) {
+            return this.newRefreshAndAccessToken(user, values);
+        }else{
+            throw new ForbiddenException('Access Denied');
+        }
+  
     }
 
     newRefreshAndAccessToken(user: User, values: { userAgent: string; ipAddress: string; }) {
