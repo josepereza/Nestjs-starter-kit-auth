@@ -11,7 +11,7 @@ One of our main principals has been to keep the starter kit as lightweight as po
 | Configuration            | Environment        | Done     |
 | Hashing                  | bcrypt             | Done     |
 | Authentication           | JWT                | Done     |
-| Authorization            | RBAC (Role based)  | Pending  |
+| Authorization            | RBAC (Role based)  | Done     |
 | ORM Integration          | TypeORM            | Done     |
 | Logging                  | winston            | Pending  |
 | Request Validation       | class-validator    | Done     |
