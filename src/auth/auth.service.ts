@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { sign, verify } from 'jsonwebtoken';
 import { User } from 'src/users/entities/user.entity';
 import { UsersService } from 'src/users/users.service';
@@ -49,31 +49,29 @@ export class AuthService {
 
 
     async refresh(refreshStr: string) {
-        // need to create this helper function.
-        // const refreshToken = await this.retrieveRefreshToken(refreshStr);
 
-        const refreshToken = verify(refreshStr, process.env.REFRESH_SECRET);
-        if (typeof refreshToken === 'string') {
-            return undefined;
+        try{
+            const refreshToken = verify(refreshStr, process.env.REFRESH_SECRET);
+            
+            if(typeof refreshToken == 'string') return undefined
+            const user = await this._users.findOne(refreshToken.userId);
+            if (!user) {
+                return undefined;
+            }
+
+            const accessToken = {
+                userId: refreshToken.userId,
+            };
+
+            // sign is imported from jsonwebtoken like import { sign, verify } from 'jsonwebtoken';
+            return {
+                accessToken: sign(accessToken, process.env.ACCESS_SECRET, { expiresIn: process.env.JWT_EXPIRATION_TIME })
+            };
+
+        }   catch(err){
+            return new HttpException({err}, HttpStatus.BAD_REQUEST)
         }
-
-        if (!refreshToken) {
-            return undefined;
-        }
-
-        const user = await this._users.findOne(refreshToken.userId);
-        if (!user) {
-            return undefined;
-        }
-
-        const accessToken = {
-            userId: refreshToken.userId,
-        };
-
-        // sign is imported from jsonwebtoken like import { sign, verify } from 'jsonwebtoken';
-        return {
-            accessToken: sign(accessToken, process.env.ACCESS_SECRET, { expiresIn: process.env.JWT_EXPIRATION_TIME })
-        };
+          
     }
 
 }
