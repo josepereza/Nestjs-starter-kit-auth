@@ -33,8 +33,6 @@ export class AuthService {
             ...values,
 
         });
-        // // add refreshObject to your db in real app
-        // this.refreshTokens.push(refreshObject);
 
         return {
             refreshToken: refreshObject.sign(),
