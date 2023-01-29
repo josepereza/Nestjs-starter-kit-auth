@@ -1,26 +1,84 @@
-import { Injectable } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common/enums';
+import { HttpException } from '@nestjs/common/exceptions';
+import { InjectRepository } from '@nestjs/typeorm';
+import { CreateUserParams, UpdateUserParams } from 'src/utils/types';
+import { Repository } from 'typeorm';
+import { User } from './entities/user.entity';
+import * as bcrypt from 'bcrypt';
+
 
 @Injectable()
 export class UsersService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+  ) { }
+
+  async create(userDetails: CreateUserParams) {
+    if (
+      (await this.userRepository.findOneBy({ username: userDetails.username }))
+    ) {
+      return new ConflictException('User already exist.');
+    }
+
+    if (
+      (await this.userRepository.findOneBy({ email: userDetails.email }))
+    ) {
+      return new ConflictException('Email already exist.');
+    }
+
+    const salt = await bcrypt.genSalt();
+
+    const newUser = this.userRepository.create({ ...userDetails });
+    newUser.password = await bcrypt.hash(userDetails.password, salt);
+
+    try {
+
+      const { id, password, ...result } = await this.userRepository.save(newUser);
+      return {
+        message: 'New user created.',
+        data: result
+      };
+    } catch (err: any) {
+      return new HttpException(err, HttpStatus.BAD_REQUEST);
+    }
+
   }
 
   findAll() {
-    return `This action returns all users`;
+    return this.userRepository
+      .createQueryBuilder('u')
+      .select(['u.name', 'u.username', 'u.email', 'u.roles'])
+      .getMany();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} user`;
+    return this.userRepository.createQueryBuilder('u')
+      .where('u.id = :id', { id: id })
+      .select(['u.name', 'u.username', 'u.email', 'u.roles'])
+      .getOne();
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  findByEmail(email: string) {
+    return this.userRepository.findOneBy({ email })
+
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  findOneByUser(username: string) {
+    return this.userRepository.findOne({
+      where: {
+        username: username,
+      }
+    });
+  }
+
+  async updateUser(id: number, userDetails: UpdateUserParams) {
+    const updatedUser = await this.userRepository.update({ id }, { ...userDetails });
+    return updatedUser;
+  }
+
+  removeUser(id: number) {
+    return this.userRepository.delete({ id });
   }
 }
