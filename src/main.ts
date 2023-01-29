@@ -8,6 +8,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(helmet());
 
+
   app.setGlobalPrefix(process.env.GLOBAL_PREFIX);
   const config = new DocumentBuilder()
     .setTitle(process.env.SWAGGER_TITLE)
