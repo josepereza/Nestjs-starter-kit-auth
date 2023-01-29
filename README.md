@@ -1,4 +1,4 @@
-## Basic NestJs Starter Rest API Kit
+## NestJs Starter Rest API Kit
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
@@ -32,12 +32,6 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
-```
-
-## Swagger
-
-```bash
-http://localhost:3001/api
 ```
 
 ## Swagger
